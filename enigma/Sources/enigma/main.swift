@@ -73,15 +73,13 @@ class Enigma {
 
     func crack(cipher: String, plainWord: String) -> String? {
         let startIndex = shift
-        for index in startIndex...key.count {
-            if index != startIndex {
-                rotate()  
-            }
+        repeat { 
             let plainText = decrypt(cipher: cipher)
             if plainText.contains(plainWord) {//
                 return plainText
-            }         
-        }
+            }  
+            rotate()       
+        } while startIndex != shift
         return nil
     }
 }

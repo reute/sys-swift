@@ -8,6 +8,7 @@ struct Player {
 let txtInvalidString = "Not a valid String,  please try again"
 let txtInvalidNumber = "Not a valid Number,  please try again"
 let txtInvalidInput = "Only two parameters allowed"
+let txtInvalidCharacter = "Only one character allowed"
 
 func enterString(message: String) -> String {    
     print("\(message)", terminator: " ") // Terminate with " " instead of \n
@@ -138,7 +139,6 @@ class Game {
         } else {
             return "List not sorted anymore"
         }
-       
     }
 }
 
