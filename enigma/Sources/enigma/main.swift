@@ -1,8 +1,10 @@
+import Foundation
+
 let txtInvalidString = "Not a valid String,  please try again"
 let txtInvalidNumber = "Not a valid Number,  please try again"
 
 enum Mode {
-    case encrypt, decrypt
+    case encrypt, decrypt, crack
 }
 
 class Enigma {
@@ -10,7 +12,7 @@ class Enigma {
     let key     = ("EKLMF6GDQVZ0TO8Y XUSP2IB4CJ5AR197W3NH")   
     var shift: Int   
 
-    init(shift: Int) {      
+    init(shift: Int = 0) {      
         self.shift = shift % key.count       
     }
 
@@ -68,6 +70,20 @@ class Enigma {
         }    
         return String(plainText)     
     }
+
+    func crack(cipher: String, plainWord: String) -> String? {
+        let startIndex = shift
+        for index in startIndex...key.count {
+            if index != startIndex {
+                rotate()  
+            }
+            let plainText = decrypt(cipher: cipher)
+            if plainText.contains(plainWord) {//
+                return plainText
+            }         
+        }
+        return nil
+    }
 }
 
 func enterString(message: String) -> String {    
@@ -105,10 +121,11 @@ func enterWalzenstellung() -> Int {
 
 func enterMode() -> Mode {
      repeat {
-        let mode = enterInt(message: "1 - Verschlüsseln\n2 - Entschlüsseln\n")
+        let mode = enterInt(message: "1 - Verschlüsseln\n2 - Entschlüsseln\n3 - Crack\n ")
         switch mode {
             case 1: return Mode.encrypt
             case 2: return Mode.decrypt
+            case 3: return Mode.crack
             default: print("Bitte wiederholen") 
         }       
     } while true
@@ -118,52 +135,24 @@ print(" * * * * ENIGMA * * * * *")
 
 let text = enterString(message: "Bitte Text eingeben: ").uppercased()
 let mode = enterMode()
-let walzenStellung = enterWalzenstellung()
+
+var walzenStellung = 0
+if (mode != .crack) {
+    walzenStellung = enterWalzenstellung()
+}
 
 let enigma = Enigma(shift: walzenStellung)
 
-if mode == .encrypt {
-    print(enigma.encrypt(plainText: text))
-} else if mode == .decrypt {
-    print(enigma.decrypt(cipher: text))
+switch mode {
+    case .encrypt: 
+        print(enigma.encrypt(plainText: text))
+    case .decrypt:
+        print(enigma.decrypt(cipher: text))
+    case .crack:
+        let plainWord = enterString(message: "Suchwort eingeben: ").uppercased()
+        if let plainText = enigma.crack(cipher: text, plainWord: plainWord) {
+            print("Lösung gefunden !\nEntschlüsselter Text: \n \(plainText)") 
+        } else {
+            print("Keine Lösung")
+        }
 }
-
-
-// subscript(indexInt: Int) -> Character {
-//     // shifting forward
-//     let indexShift = key.count - shift        
-//     let newIndexInt = (indexShift + indexInt) % key.count
-//     let newIndex = key.index(key.startIndex, offsetBy: newIndexInt)
-//     return key[newIndex]
-// }
-
-// subscript(char: Character) -> Int {
-//     // shifting forward
-//     let index = key.index(of: char)
-//     if index == nil {
-//         index = key.index(of: " ")
-//     }
-//     if let index = key.index(of: char) {
-//         let indexInt = key.distance(from: key.startIndex, to: index)
-//         let newIndexInt = ((key.count + indexInt) - shift) % key.count 
-//     //let newIndex = key.index(key.startIndex, offsetBy: newIndexInt)
-//         return newIndexInt
-//     }
-//     return 0       
-// }
-
-// different Solution with String.Index parameter
-// subscript(index: String.Index) -> Character {
-//     // shifting forward
-//     let indexShift = key.count - shift
-//     let newIndex = (indexShift + indexInt) % key.count        
-//     let strIndex = key.index(key.startIndex, offsetBy: newIndex)
-//     return key[strIndex]
-// } 
-
-// Needed as string index access not implemented in swift as default
-// extension String {
-//     subscript (i: Int) -> Character {
-//     return self[index(startIndex, offsetBy: i)]
-//   }
-// }
