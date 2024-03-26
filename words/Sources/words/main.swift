@@ -148,7 +148,7 @@ repeat {
     // Check if there are fitting cities left
     fittingCities = ch.getFittingCities()
     if  fittingCities.isEmpty {
-        print("No more words available, you won") 
+        print("No more fitting cities available, you won") 
         break
     }   
 } while true
